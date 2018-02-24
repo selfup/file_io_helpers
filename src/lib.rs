@@ -6,18 +6,6 @@ const READ_ERR: &str = "something went wrong reading the file";
 const WRITE_ERR: &str = "something went wrong writing the file";
 const NOT_FOUND: &str = "file not found";
 
-pub struct Fut {
-    pub dup_map: HashMap<String, bool>,
-}
-
-impl Fut {
-    pub fn new() -> Fut {
-        Fut {
-            dup_map: create_duplicate_map(),
-        }
-    }
-}
-
 // public
 
 pub fn read_file_into_vec(filename: &str) -> Vec<String> {
@@ -58,20 +46,18 @@ pub fn open_file_as_string(filename: &str) -> String {
     contents
 }
 
-// private
-
-fn create_duplicate_map() -> HashMap<String, bool> {
+pub fn create_duplicate_map() -> HashMap<String, bool> {
     let dup_map: HashMap<String, bool> = HashMap::new();
     dup_map
 }
 
 #[cfg(test)]
 mod tests {
-    use Fut;
+    use super::*;
 
     #[test]
     fn it_stacks_lines_into_vec() {
-        let string_vec: Vec<String> = Fut::read_file_into_vec("./fixtures/test/test.csv");
+        let string_vec: Vec<String> = read_file_into_vec("./fixtures/test/test.csv");
 
         assert_eq!("hello,", string_vec[0]);
         assert_eq!("world,", string_vec[1]);
@@ -81,7 +67,7 @@ mod tests {
 
     #[test]
     fn it_opens_file_as_a_string() {
-        let string_file: String = Fut::open_file_as_string("./fixtures/test/test.csv");
+        let string_file: String = open_file_as_string("./fixtures/test/test.csv");
 
         assert_eq!("hello,\nworld,\nfoo,\nbar\n", string_file);
     }
@@ -90,17 +76,17 @@ mod tests {
     fn it_replaces_string_contents() {
         let string: String = "hello\nworld\nfoo\nbar".to_string();
 
-        assert_eq!(String::from("helloworldfoobar"), Fut::sub(&string, "\n", ""));
+        assert_eq!(String::from("helloworldfoobar"), sub(&string, "\n", ""));
     }
 
     #[test]
     fn it_can_create_a_duplicate_entry_if_id_not_found_and_find_duplicates() {
-        let mut fut = Fut::new();
+        let mut dups = create_duplicate_map();
 
         // not duplicate
-        assert!(!Fut::is_dup(&mut fut.dup_map, "90"));
+        assert!(!is_dup(&mut dups, "90"));
 
         // duplicate
-        assert!(Fut::is_dup(&mut fut.dup_map, "90"))
+        assert!(is_dup(&mut dups, "90"))
     }
 }
