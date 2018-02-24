@@ -6,13 +6,13 @@ const READ_ERR: &str = "something went wrong reading the file";
 const WRITE_ERR: &str = "something went wrong writing the file";
 const NOT_FOUND: &str = "file not found";
 
-pub struct FileIoUtil {
+pub struct Fut {
     pub dup_map: HashMap<String, bool>,
 }
 
-impl FileIoUtil {
-    pub fn new() -> FileIoUtil {
-        FileIoUtil {
+impl Fut {
+    pub fn new() -> Fut {
+        Fut {
             dup_map: create_duplicate_map(),
         }
     }
@@ -63,11 +63,11 @@ fn create_duplicate_map() -> HashMap<String, bool> {
 
 #[cfg(test)]
 mod tests {
-    use FileIoUtil;
+    use Fut;
 
     #[test]
     fn it_stacks_lines_into_vec() {
-        let fut = FileIoUtil::new();
+        let fut = Fut::new();
 
         let string_vec: Vec<String> = fut.read_file_into_vec("./fixtures/test/test.csv");
 
@@ -79,7 +79,7 @@ mod tests {
 
     #[test]
     fn it_opens_file_as_a_string() {
-        let fut = FileIoUtil::new();
+        let fut = Fut::new();
 
         let string_file: String = fut.open_file_as_string("./fixtures/test/test.csv");
 
@@ -88,7 +88,7 @@ mod tests {
 
     #[test]
     fn it_replaces_string_contents() {
-        let fut = FileIoUtil::new();
+        let fut = Fut::new();
 
         let string: String = "hello\nworld\nfoo\nbar".to_string();
 
@@ -97,7 +97,7 @@ mod tests {
 
     #[test]
     fn it_can_create_a_duplicate_entry_if_id_not_found_and_find_duplicates() {
-        let mut fut = FileIoUtil::new();
+        let mut fut = Fut::new();
 
         // not duplicate
         assert!(!fut.is_dup("90"));

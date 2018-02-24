@@ -1,5 +1,5 @@
 [package]
-name = "file_io_util"
+name = "fut"
 version = "0.1.0"
 authors = ["selfup <boudinot.regis@yahoo.com>"]
 

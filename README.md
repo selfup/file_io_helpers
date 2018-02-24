@@ -1,3 +1,3 @@
-# CSV Fun With Rust
+# Fut: File Util :rocket:
 
-Simple as the title :rocket:
+TODO: Write README :joy:
