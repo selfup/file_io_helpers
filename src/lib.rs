@@ -17,41 +17,36 @@ impl Fut {
         }
     }
 
-    pub fn read_file_into_vec(self, filename: &str) -> Vec<String> {
+    pub fn read_file_into_vec(filename: &str) -> Vec<String> {
         let mut target = vec![];
 
-        for line in self.open_file_as_string(filename).split("\n") {
+        for line in open_file_as_string(filename).split("\n") {
             target.push(String::from(line));
         }
 
         target
     }
 
-    pub fn open_file_as_string(self, filename: &str) -> String {
-        let mut file = File::open(filename).expect(NOT_FOUND);
-        let mut contents = String::new();
-        
-        file.read_to_string(&mut contents).expect(READ_ERR);
-        
-        contents
+    pub fn open_file_as_string(filename: &str) -> String {
+        open_file_as_string(filename)
     }
 
-    pub fn write_file(self, source: String, target: &str) {
+    pub fn write_file(source: String, target: &str) {
         let mut file = File::create(target).expect(NOT_FOUND);
         file.write_all(source.as_bytes()).expect(WRITE_ERR);
     }
 
-    pub fn is_dup(&mut self, id: &str) -> bool {
-        match self.dup_map.get(id) {
+    pub fn is_dup(dup_map: &mut HashMap<String, bool>, id: &str) -> bool {
+        match dup_map.get(id) {
             Some(_) => true,
             None => {
-                self.dup_map.insert(String::from(id), true);
+                dup_map.insert(String::from(id), true);
                 false
             }
         }
     }
 
-    pub fn sub(self, source: &String, pattern: &str, replacement: &str) -> String {
+    pub fn sub(source: &String, pattern: &str, replacement: &str) -> String {
         String::from(str::replace(&source, pattern, replacement))
     }
 }
@@ -61,15 +56,22 @@ fn create_duplicate_map() -> HashMap<String, bool> {
     dup_map
 }
 
+fn open_file_as_string(filename: &str) -> String {
+    let mut file = File::open(filename).expect(NOT_FOUND);
+    let mut contents = String::new();
+    
+    file.read_to_string(&mut contents).expect(READ_ERR);
+    
+    contents
+}
+
 #[cfg(test)]
 mod tests {
     use Fut;
 
     #[test]
     fn it_stacks_lines_into_vec() {
-        let fut = Fut::new();
-
-        let string_vec: Vec<String> = fut.read_file_into_vec("./fixtures/test/test.csv");
+        let string_vec: Vec<String> = Fut::read_file_into_vec("./fixtures/test/test.csv");
 
         assert_eq!("hello,", string_vec[0]);
         assert_eq!("world,", string_vec[1]);
@@ -79,20 +81,16 @@ mod tests {
 
     #[test]
     fn it_opens_file_as_a_string() {
-        let fut = Fut::new();
-
-        let string_file: String = fut.open_file_as_string("./fixtures/test/test.csv");
+        let string_file: String = Fut::open_file_as_string("./fixtures/test/test.csv");
 
         assert_eq!("hello,\nworld,\nfoo,\nbar\n", string_file);
     }
 
     #[test]
     fn it_replaces_string_contents() {
-        let fut = Fut::new();
-
         let string: String = "hello\nworld\nfoo\nbar".to_string();
 
-        assert_eq!(String::from("helloworldfoobar"), fut.sub(&string, "\n", ""));
+        assert_eq!(String::from("helloworldfoobar"), Fut::sub(&string, "\n", ""));
     }
 
     #[test]
@@ -100,9 +98,9 @@ mod tests {
         let mut fut = Fut::new();
 
         // not duplicate
-        assert!(!fut.is_dup("90"));
+        assert!(!Fut::is_dup(&mut fut.dup_map, "90"));
 
         // duplicate
-        assert!(fut.is_dup("90"))
+        assert!(Fut::is_dup(&mut fut.dup_map, "90"))
     }
 }
