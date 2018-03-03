@@ -18,6 +18,15 @@ pub fn read_file_into_vec(filename: &str) -> Vec<String> {
     target
 }
 
+pub fn open_file_as_string(filename: &str) -> String {
+    let mut file = File::open(filename).expect(NOT_FOUND);
+    let mut contents = String::new();
+    
+    file.read_to_string(&mut contents).expect(READ_ERR);
+    
+    contents
+}
+
 pub fn write_file(source: String, target: &str) {
     let mut file = File::create(target).expect(NOT_FOUND);
     file.write_all(source.as_bytes()).expect(WRITE_ERR);
@@ -33,22 +42,44 @@ pub fn is_dup(dup_map: &mut HashMap<String, bool>, id: &str) -> bool {
     }
 }
 
-pub fn sub(source: &String, pattern: &str, replacement: &str) -> String {
-    String::from(str::replace(&source, pattern, replacement))
+pub fn store_into_map(store_map: &mut HashMap<String, Vec<String>>, key: &str, value: String) -> bool {
+    let mut vals: Vec<String> = vec![];
+
+    let exists = match store_map.get(key) {
+        Some(values) => {
+            vals = values.to_vec();
+            true
+        },
+        None => false
+    };
+
+    let mut new_values = vec![];
+
+    if exists == false {
+        vals.push(value);
+    }
+
+    for val in vals {
+        new_values.push(val.to_owned());
+    }
+
+    store_map.insert(String::from(key), new_values);
+
+    exists
 }
 
-pub fn open_file_as_string(filename: &str) -> String {
-    let mut file = File::open(filename).expect(NOT_FOUND);
-    let mut contents = String::new();
-    
-    file.read_to_string(&mut contents).expect(READ_ERR);
-    
-    contents
+pub fn sub(source: &String, pattern: &str, replacement: &str) -> String {
+    String::from(str::replace(&source, pattern, replacement))
 }
 
 pub fn create_duplicate_map() -> HashMap<String, bool> {
     let dup_map: HashMap<String, bool> = HashMap::new();
     dup_map
+}
+
+pub fn create_store_map() -> HashMap<String, Vec<String>> {
+    let store_map: HashMap<String, Vec<String>> = HashMap::new();
+    store_map
 }
 
 #[cfg(test)]
@@ -88,5 +119,13 @@ mod tests {
 
         // duplicate
         assert!(is_dup(&mut dups, "90"))
+    }
+
+    #[test]
+    fn it_can_store_into_map() {
+        let mut store = create_store_map();
+
+        assert!(!store_into_map(&mut store, "1", "1,er,gh,45,epp".to_string()));
+        assert!(store_into_map(&mut store, "1", "1,as,vb,45,abb".to_string()));
     }
 }
