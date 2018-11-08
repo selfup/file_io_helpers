@@ -1,6 +1,6 @@
+use std::collections::HashMap;
 use std::fs::File;
 use std::io::prelude::*;
-use std::collections::HashMap;
 
 const READ_ERR: &str = "something went wrong reading the file";
 const WRITE_ERR: &str = "something went wrong writing the file";
@@ -21,9 +21,9 @@ pub fn read_file_into_vec(filename: &str) -> Vec<String> {
 pub fn open_file_as_string(filename: &str) -> String {
     let mut file = File::open(filename).expect(NOT_FOUND);
     let mut contents = String::new();
-    
+
     file.read_to_string(&mut contents).expect(READ_ERR);
-    
+
     contents
 }
 
@@ -42,15 +42,19 @@ pub fn is_dup(dup_map: &mut HashMap<String, bool>, id: &str) -> bool {
     }
 }
 
-pub fn store_into_map(store_map: &mut HashMap<String, Vec<String>>, key: &str, value: String) -> bool {
+pub fn store_into_map(
+    store_map: &mut HashMap<String, Vec<String>>,
+    key: &str,
+    value: String,
+) -> bool {
     let mut vals: Vec<String> = vec![];
 
     let exists = match store_map.get(key) {
         Some(values) => {
             vals = values.to_vec();
             true
-        },
-        None => false
+        }
+        None => false,
     };
 
     let mut new_values = vec![];
@@ -125,7 +129,25 @@ mod tests {
     fn it_can_store_into_map() {
         let mut store = create_store_map();
 
-        assert!(!store_into_map(&mut store, "1", "1,er,gh,45,epp".to_string()));
-        assert!(store_into_map(&mut store, "1", "1,as,vb,45,abb".to_string()));
+        assert!(!store_into_map(
+            &mut store,
+            "1",
+            "1,er,gh,45,epp".to_string()
+        ));
+        assert!(store_into_map(
+            &mut store,
+            "1",
+            "1,as,vb,45,abb".to_string()
+        ));
     }
+
+    #[test]
+    fn it_reads_and_writes_a_large_file() {
+        let file = open_file_as_string("fixtures/something.csv");
+
+        write_file(String::from(file), "fixtures/result/test.csv");
+
+        assert!(true);
+    }
+
 }
