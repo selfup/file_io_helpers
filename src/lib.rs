@@ -186,9 +186,9 @@ mod tests {
 
     #[test]
     fn it_reads_and_writes_a_large_file() {
-        let file = open_file_as_string("fixtures/something.csv");
+        let file = open_file_as_string("fixtures/test/test.csv");
 
-        write_file(file, "fixtures/result/test.csv");
+        write_file(file, "fixtures/results/test.csv");
 
         assert!(true);
     }

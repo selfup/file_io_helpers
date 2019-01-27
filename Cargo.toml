@@ -1,6 +1,8 @@
 [package]
 name = "fut"
 version = "0.1.0"
+description = "simple file util crate"
+license = "MIT"
 authors = ["selfup <boudinot.regis@yahoo.com>"]
 
 [dependencies]
