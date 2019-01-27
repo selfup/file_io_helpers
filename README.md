@@ -1,3 +1,5 @@
 # Fut: File Util :rocket:
 
-TODO: Write README :joy:
+Makes dealing with a files a bit less cognitive :pray:
+
+Here are the docs: https://docs.rs/fut
