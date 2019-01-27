@@ -6,10 +6,9 @@ const READ_ERR: &str = "something went wrong reading the file";
 const WRITE_ERR: &str = "something went wrong writing the file";
 const NOT_FOUND: &str = "file not found";
 
-// public
-
-pub fn read_file_into_vec(filename: &str) -> Vec<String> {
-    let mut target = vec![];
+/// Reads a file, and returns a Vec-String- where each element is a line.
+pub fn read_file_into_line_vec(filename: &str) -> Vec<String> {
+    let mut target: Vec<String> = vec![];
 
     for line in open_file_as_string(filename).split("\n") {
         target.push(String::from(line));
@@ -18,6 +17,18 @@ pub fn read_file_into_vec(filename: &str) -> Vec<String> {
     target
 }
 
+/// Reads a file, and returns a Vec-String- where each element is a character.
+pub fn read_file_into_char_vec(filename: &str) -> Vec<String> {
+    let mut target: Vec<String> = vec![];
+
+    for line in open_file_as_string(filename).split("") {
+        target.push(String::from(line));
+    }
+
+    target
+}
+
+/// Reads a file, and returns a String of the entire file.
 pub fn open_file_as_string(filename: &str) -> String {
     let mut file = File::open(filename).expect(NOT_FOUND);
     let mut contents = String::new();
@@ -27,11 +38,28 @@ pub fn open_file_as_string(filename: &str) -> String {
     contents
 }
 
+/// Writes a new file from a String.
+/// Target is just an &str for where the file will be written.
 pub fn write_file(source: String, target: &str) {
     let mut file = File::create(target).expect(NOT_FOUND);
     file.write_all(source.as_bytes()).expect(WRITE_ERR);
 }
 
+/// Checks the duplicated map passed in for duplicates.
+/// ```
+/// extern crate fut;
+///
+/// use fut::{is_dup, create_duplicate_map};
+///
+/// let mut dup_map = create_duplicate_map();
+///
+/// if is_dup(&mut dup_map, "some_key") {
+///   println!("We must do something about this duplicate!")
+/// } else {
+///   println!("Good to go!")
+/// }
+/// ```
+///
 pub fn is_dup(dup_map: &mut HashMap<String, bool>, id: &str) -> bool {
     match dup_map.get(id) {
         Some(_) => true,
@@ -42,6 +70,7 @@ pub fn is_dup(dup_map: &mut HashMap<String, bool>, id: &str) -> bool {
     }
 }
 
+/// Stores a new string in a HashMap where the values is a Vec-String- of all values.
 pub fn store_into_map(
     store_map: &mut HashMap<String, Vec<String>>,
     key: &str,
@@ -57,7 +86,7 @@ pub fn store_into_map(
         None => false,
     };
 
-    let mut new_values = vec![];
+    let mut new_values: Vec<String> = vec![];
 
     if exists == false {
         vals.push(value);
@@ -72,15 +101,20 @@ pub fn store_into_map(
     exists
 }
 
+/// Simple find and replace util.
 pub fn sub(source: &String, pattern: &str, replacement: &str) -> String {
     String::from(str::replace(&source, pattern, replacement))
 }
 
+/// A simple HashMap that store true or false to find duplicates.
 pub fn create_duplicate_map() -> HashMap<String, bool> {
     let dup_map: HashMap<String, bool> = HashMap::new();
     dup_map
 }
 
+/// The expected HashMap that fut exposes.
+/// Reading from CSVs or textfiles can often have duplicates.
+/// So here we ensure that we can store all duplicates.
 pub fn create_store_map() -> HashMap<String, Vec<String>> {
     let store_map: HashMap<String, Vec<String>> = HashMap::new();
     store_map
@@ -92,12 +126,21 @@ mod tests {
 
     #[test]
     fn it_stacks_lines_into_vec() {
-        let string_vec: Vec<String> = read_file_into_vec("./fixtures/test/test.csv");
+        let string_vec: Vec<String> = read_file_into_line_vec("./fixtures/test/test.csv");
 
         assert_eq!("hello,", string_vec[0]);
         assert_eq!("world,", string_vec[1]);
         assert_eq!("foo,", string_vec[2]);
         assert_eq!("bar", string_vec[3]);
+    }
+
+    #[test]
+    fn it_stacks_chars_into_vec() {
+        let string_vec: Vec<String> = read_file_into_char_vec("./fixtures/test/test.csv");
+
+        assert_eq!("", string_vec[0]);
+        assert_eq!("h", string_vec[1]);
+        assert_eq!("e", string_vec[2]);
     }
 
     #[test]
@@ -145,7 +188,7 @@ mod tests {
     fn it_reads_and_writes_a_large_file() {
         let file = open_file_as_string("fixtures/something.csv");
 
-        write_file(String::from(file), "fixtures/result/test.csv");
+        write_file(file, "fixtures/result/test.csv");
 
         assert!(true);
     }
