@@ -1,5 +1,7 @@
-# Fut: File Util :rocket:
+# Let Mut Fut!
 
-Makes dealing with a files a bit less cognitive :pray:
+Fut: File Utility (What the fut!)
+
+Makes dealing with files a bit less cognitive :pray:
 
 Here are the docs: https://docs.rs/fut
