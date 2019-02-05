@@ -1,9 +1,10 @@
 [package]
 name = "fut"
-version = "0.1.2"
+version = "0.1.3"
 description = "simple file util crate"
 license = "MIT"
 repository = "https://github.com/selfup/fut"
 authors = ["selfup <boudinot.regis@yahoo.com>"]
+readme = "README.md"
 
 [dependencies]
